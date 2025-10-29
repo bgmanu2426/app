@@ -107,7 +107,7 @@ export default function Index() {
       }
 
       // Capture the view as image
-      if (viewShotRef.current) {
+      if (viewShotRef.current && viewShotRef.current.capture) {
         const uri = await viewShotRef.current.capture();
         
         // Share the image
