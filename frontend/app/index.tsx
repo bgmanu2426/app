@@ -67,27 +67,57 @@ export default function Index() {
     try {
       setLoading(true);
       
-      // Request permissions
-      const { status } = await MediaLibrary.requestPermissionsAsync();
+      // Request permissions - try both old and new permission types for Android 13+
+      const { status, canAskAgain, granted } = await MediaLibrary.requestPermissionsAsync();
+      
+      console.log('Permission status:', { status, canAskAgain, granted });
+      
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Please allow access to save images to gallery');
+        if (!canAskAgain) {
+          Alert.alert(
+            'Permission Required',
+            'Please enable gallery permissions in your device settings to save QR codes.',
+            [{ text: 'OK' }]
+          );
+        } else {
+          Alert.alert(
+            'Permission Denied',
+            'Gallery access is required to save QR codes. Please grant permission.',
+            [{ text: 'OK' }]
+          );
+        }
         setLoading(false);
         return;
       }
 
       // Capture the view as image
       if (viewShotRef.current && viewShotRef.current.capture) {
+        console.log('Capturing QR code...');
         const uri = await viewShotRef.current.capture();
+        console.log('Captured URI:', uri);
         
         // Save to media library
         const asset = await MediaLibrary.createAssetAsync(uri);
-        await MediaLibrary.createAlbumAsync('UPI QR Codes', asset, false);
+        console.log('Asset created:', asset.id);
+        
+        // Try to create album, but don't fail if it already exists
+        try {
+          await MediaLibrary.createAlbumAsync('UPI QR Codes', asset, false);
+        } catch (albumError) {
+          console.log('Album creation note:', albumError);
+          // Album might already exist, which is fine
+        }
         
         Alert.alert('Success', 'QR Code saved to gallery!');
+      } else {
+        Alert.alert('Error', 'Unable to capture QR code. Please try again.');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving to gallery:', error);
-      Alert.alert('Error', 'Failed to save QR code to gallery');
+      Alert.alert(
+        'Error', 
+        `Failed to save QR code: ${error.message || 'Unknown error'}\n\nPlease check app permissions in settings.`
+      );
     } finally {
       setLoading(false);
     }
