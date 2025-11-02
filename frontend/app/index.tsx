@@ -24,7 +24,7 @@ export default function Index() {
   const [qrValue, setQrValue] = useState('');
   const [showQR, setShowQR] = useState(false);
   const [loading, setLoading] = useState(false);
-  const viewShotRef = useRef<ViewShot>(null);
+  const viewShotRef = useRef<View>(null);
 
   // Validate UPI ID format (user@bank)
   const validateUpiId = (id: string): boolean => {
