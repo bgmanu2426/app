@@ -54,7 +54,9 @@
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save QR codes to your photos.",
           "isAccessMediaLocationEnabled": true
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
