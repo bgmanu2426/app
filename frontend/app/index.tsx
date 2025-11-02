@@ -90,10 +90,13 @@ export default function Index() {
         return;
       }
 
-      // Capture the view as image
-      if (viewShotRef.current && viewShotRef.current.capture) {
+      // Capture the view as image using captureRef
+      if (viewShotRef.current) {
         console.log('Capturing QR code...');
-        const uri = await viewShotRef.current.capture();
+        const uri = await captureRef(viewShotRef, {
+          format: 'png',
+          quality: 1,
+        });
         console.log('Captured URI:', uri);
         
         // Save to media library
@@ -102,10 +105,15 @@ export default function Index() {
         
         // Try to create album, but don't fail if it already exists
         try {
-          await MediaLibrary.createAlbumAsync('UPI QR Codes', asset, false);
+          const album = await MediaLibrary.getAlbumAsync('UPI QR Codes');
+          if (album) {
+            await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+          } else {
+            await MediaLibrary.createAlbumAsync('UPI QR Codes', asset, false);
+          }
         } catch (albumError) {
-          console.log('Album creation note:', albumError);
-          // Album might already exist, which is fine
+          console.log('Album handling:', albumError);
+          // Album operations might fail on some devices, but asset is still saved
         }
         
         Alert.alert('Success', 'QR Code saved to gallery!');
