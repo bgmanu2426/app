@@ -144,15 +144,20 @@ export default function Index() {
         return;
       }
 
-      // Capture the view as image
-      if (viewShotRef.current && viewShotRef.current.capture) {
-        const uri = await viewShotRef.current.capture();
+      // Capture the view as image using captureRef
+      if (viewShotRef.current) {
+        const uri = await captureRef(viewShotRef, {
+          format: 'png',
+          quality: 1,
+        });
         
         // Share the image
         await Sharing.shareAsync(uri, {
           mimeType: 'image/png',
           dialogTitle: 'Share UPI QR Code',
         });
+      } else {
+        Alert.alert('Error', 'Unable to capture QR code. Please try again.');
       }
     } catch (error) {
       console.error('Error sharing:', error);
