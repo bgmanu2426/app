@@ -229,9 +229,9 @@ export default function Index() {
           {/* QR Code Display */}
           {showQR && qrValue && (
             <View style={styles.qrContainer}>
-              <ViewShot
+              <View
                 ref={viewShotRef}
-                options={{ format: 'png', quality: 1 }}
+                collapsable={false}
                 style={styles.qrWrapper}
               >
                 <View style={styles.qrInnerWrapper}>
@@ -244,7 +244,7 @@ export default function Index() {
                     <Text style={styles.qrDetailText}>Amount: ₹{amount}</Text>
                   </View>
                 </View>
-              </ViewShot>
+              </View>
 
               {/* Action Buttons */}
               <View style={styles.actionButtons}>
